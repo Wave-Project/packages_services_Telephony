@@ -1477,7 +1477,7 @@ public class TelecomAccountRegistry {
 
     private  IExtTelephony getIExtTelephony() {
         try {
-            IExtTelephony ex = IExtTelephony.Stub.asInterface(ServiceManager.getService("extphone"));
+            IExtTelephony ex = IExtTelephony.Stub.asInterface(ServiceManager.getService("qti.radio.extphone"));
             return ex;
         } catch (NoClassDefFoundError ex) {
             return null;
@@ -1644,9 +1644,7 @@ public class TelecomAccountRegistry {
     private boolean isRadioInValidState(Phone[] phones) {
         boolean isApmSimNotPwrDown = false;
         try {
-            IExtTelephony extTelephony = IExtTelephony.Stub
-                 .asInterface(ServiceManager.getService("extphone"));
-            int propVal = extTelephony.getPropertyValueInt(APM_SIM_NOT_PWDN_PROPERTY, 0);
+            int propVal = getIExtTelephony().getPropertyValueInt(APM_SIM_NOT_PWDN_PROPERTY, 0);
             isApmSimNotPwrDown = (propVal == 1);
             Log.d(this, "isRadioInValidState, propVal = " + propVal +
                     " isApmSimNotPwrDown = " + isApmSimNotPwrDown);

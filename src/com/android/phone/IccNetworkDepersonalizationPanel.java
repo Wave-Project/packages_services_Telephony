@@ -100,7 +100,7 @@ public class IccNetworkDepersonalizationPanel extends IccPanel {
 
     private  IExtTelephony getIExtTelephony() {
         try {
-            IExtTelephony ex = IExtTelephony.Stub.asInterface(ServiceManager.getService("extphone"));
+            IExtTelephony ex = IExtTelephony.Stub.asInterface(ServiceManager.getService("qti.radio.extphone"));
             return ex;
         } catch (NoClassDefFoundError ex) {
             return null;
@@ -315,8 +315,15 @@ public class IccNetworkDepersonalizationPanel extends IccPanel {
                 log("Requesting De-Personalization for subtype " + mPersoSubtype
                         + " subtype val " + persoState);
                 try {
-                    mExtTelephony.supplyIccDepersonalization(pin, Integer.toString(persoState),
-                            mCallback, mPhone.getPhoneId());
+                    // If 1.5 or above HAL Version, then functionality uses IRadio.hal
+                    // else follow legacy procedure
+                    if(mPhone.getHalVersion().greaterOrEqual(RIL.RADIO_HAL_VERSION_1_5)) {
+                        mPhone.getIccCard().supplySimDepersonalization(mPersoSubState,pin,
+                               Message.obtain(mHandler, EVENT_ICC_NTWRK_DEPERSONALIZATION_RESULT));
+                    } else {
+                        mExtTelephony.supplyIccDepersonalization(pin, Integer.toString(persoState),
+                                 mCallback, mPhone.getPhoneId());
+                    }
                 } catch (RemoteException ex) {
                     log("RemoteException @supplyIccDepersonalization" + ex);
                 } catch (NullPointerException ex) {

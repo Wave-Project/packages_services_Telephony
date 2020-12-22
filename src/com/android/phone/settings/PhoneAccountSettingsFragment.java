@@ -111,6 +111,15 @@ public class PhoneAccountSettingsFragment extends PreferenceFragment
         }
     };
 
+    private IExtTelephony getIExtTelephony() {
+        try {
+            IExtTelephony ex = IExtTelephony.Stub.asInterface(ServiceManager.getService("qti.radio.extphone"));
+            return ex;
+        } catch (NoClassDefFoundError ex) {
+            return null;
+        }
+    }
+
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
@@ -118,9 +127,7 @@ public class PhoneAccountSettingsFragment extends PreferenceFragment
         mTelecomManager = getActivity().getSystemService(TelecomManager.class);
         mTelephonyManager = TelephonyManager.from(getActivity());
         mSubscriptionManager = SubscriptionManager.from(getActivity());
-
-        IExtTelephony extTelephony =
-                IExtTelephony.Stub.asInterface(ServiceManager.getService("qti.radio.extphone"));
+        IExtTelephony extTelephony = getIExtTelephony();
 
         try {
             if (extTelephony != null) {
